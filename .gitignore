@@ -1,0 +1,21 @@
+# Node
+node_modules/
+dist/
+*.local
+.DS_Store
+frontend/node_modules/
+frontend/dist/
+
+# Java
+target/
+backend/target/
+!.mvn/wrapper/maven-wrapper.jar
+**/application-local.yml
+.idea/
+*.iml
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.log
