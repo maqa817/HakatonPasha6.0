@@ -33,9 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (userId: string, password: string) => {
     const res = await apiLogin(userId, password)
-    if (res.role !== 'SUPER_ADMIN') {
-      throw new Error('Bu panel yalnız Super Admin üçün açıqdır.')
-    }
+    // Removed the restriction to only allow SUPER_ADMIN
     localStorage.setItem(TOKEN_KEY, res.accessToken)
     localStorage.setItem(DISPLAY_KEY, res.displayName)
     localStorage.setItem('fg_admin_role', res.role)

@@ -7,7 +7,7 @@ import {
 } from '../api/client'
 import { useAuth } from '../context/AuthContext'
 import type { UserRow } from '../types'
-import { FILIAL_LIST } from '../types'
+import { FILIAL_LIST, ADMIN_CATEGORIES } from '../types'
 
 export function UsersPage() {
   const { token } = useAuth()
@@ -23,6 +23,7 @@ export function UsersPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [roleSelect, setRoleSelect] = useState('MANAGER')
+  const [selectedCats, setSelectedCats] = useState<string[]>([])
 
   const [edit, setEdit] = useState<UserRow | null>(null)
   const [editFn, setEditFn] = useState('')
@@ -31,6 +32,7 @@ export function UsersPage() {
   const [editEmail, setEditEmail] = useState('')
   const [editPw, setEditPw] = useState('')
   const [editRole, setEditRole] = useState('')
+  const [editCats, setEditCats] = useState<string[]>([])
 
   async function reload() {
     if (!token) {
@@ -68,12 +70,14 @@ export function UsersPage() {
         email: email.trim(),
         password,
         role: roleSelect,
+        categories: roleSelect === 'ADMIN' ? selectedCats : [],
       })
       setFn('')
       setLn('')
       setFilial(FILIAL_LIST[0])
       setEmail('')
       setPassword('')
+      setSelectedCats([])
       await reload()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Xəta')
@@ -89,6 +93,7 @@ export function UsersPage() {
     setEditFilial(u.filial)
     setEditEmail(u.email || '')
     setEditRole(u.role)
+    setEditCats(u.categories || [])
     setEditPw('')
   }
 
@@ -105,6 +110,7 @@ export function UsersPage() {
         filial: editFilial,
         email: editEmail.trim(),
         role: editRole,
+        categories: editRole === 'ADMIN' ? editCats : [],
         ...(editPw.length >= 8 ? { newPassword: editPw } : {}),
       })
       setEdit(null)
@@ -237,6 +243,31 @@ export function UsersPage() {
         </div>
       </form>
 
+      {roleSelect === 'ADMIN' && (
+        <div className="rounded-2xl border border-fg-300/15 bg-surface/80 p-5 shadow-card">
+          <span className="mb-3 block text-sm font-medium text-fg-700">Admin üçün sahalər seçin:</span>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {ADMIN_CATEGORIES.map((cat) => (
+              <label key={cat} className="flex items-center gap-2 text-sm text-fg-600 transition hover:text-fg-900">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-fg-300 text-mint-600 focus:ring-mint-500"
+                  checked={selectedCats.includes(cat)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedCats([...selectedCats, cat]);
+                    } else {
+                      setSelectedCats(selectedCats.filter((c) => c !== cat));
+                    }
+                  }}
+                />
+                {cat}
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="overflow-x-auto rounded-2xl border border-fg-300/15 bg-white shadow-card">
         <table className="min-w-full text-left text-sm">
           <thead className="bg-fg-950/[0.03] text-xs uppercase tracking-wide text-fg-500">
@@ -266,17 +297,28 @@ export function UsersPage() {
                     <td className="px-5 py-4 text-sm text-fg-600">{u.email}</td>
                     <td className="px-5 py-4 text-sm text-fg-600">{u.filial}</td>
                     <td className="px-5 py-4 text-sm">
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                          u.role === 'SUPER_ADMIN'
-                            ? 'bg-purple-100 text-purple-700'
-                            : u.role === 'ADMIN'
-                              ? 'bg-blue-100 text-blue-700'
-                              : 'bg-mint-100 text-mint-700'
-                        }`}
-                      >
-                        {u.role === 'SUPER_ADMIN' ? 'Super Admin' : u.role === 'ADMIN' ? 'Admin' : 'Müdir'}
-                      </span>
+                      <div className="flex flex-col gap-1">
+                        <span
+                          className={`inline-block rounded-full px-2 py-0.5 text-xs font-semibold w-fit ${
+                            u.role === 'SUPER_ADMIN'
+                              ? 'bg-purple-100 text-purple-700'
+                              : u.role === 'ADMIN'
+                                ? 'bg-blue-100 text-blue-700'
+                                : 'bg-mint-100 text-mint-700'
+                          }`}
+                        >
+                          {u.role === 'SUPER_ADMIN' ? 'Super Admin' : u.role === 'ADMIN' ? 'Admin' : 'Müdir'}
+                        </span>
+                        {u.role === 'ADMIN' && u.categories && u.categories.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {u.categories.map((c) => (
+                              <span key={c} className="rounded bg-fg-100 px-1.5 py-0.5 text-[10px] text-fg-600">
+                                {c}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </td>
                   <td className="px-5 py-4 text-sm text-fg-600">
                     <span
@@ -384,6 +426,30 @@ export function UsersPage() {
                 minLength={8}
               />
             </label>
+            {editRole === 'ADMIN' && (
+              <div className="space-y-2">
+                <span className="text-sm font-medium text-fg-700">Admin üçün sahalər seçin:</span>
+                <div className="grid grid-cols-2 gap-3 max-h-40 overflow-y-auto rounded-lg border border-fg-300/20 p-3 bg-fg-50/50">
+                  {ADMIN_CATEGORIES.map((cat) => (
+                    <label key={cat} className="flex items-center gap-2 text-sm text-fg-600 transition hover:text-fg-900">
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 rounded border-fg-300 text-mint-600 focus:ring-mint-500"
+                        checked={editCats.includes(cat)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setEditCats([...editCats, cat]);
+                          } else {
+                            setEditCats(editCats.filter((c) => c !== cat));
+                          }
+                        }}
+                      />
+                      {cat}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
             <div className="flex gap-3 pt-2">
               <button
                 type="button"

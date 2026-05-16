@@ -1,26 +1,3 @@
-export type FoodCategory =
-  | 'FRUIT'
-  | 'VEGETABLE'
-  | 'MEAT_POULTRY'
-  | 'DAIRY'
-  | 'BREAD_PASTRY'
-  | 'EGGS'
-  | 'CONFECTIONERY'
-  | 'BEVERAGES'
-  | 'OTHER'
-
-export const FOOD_CATEGORY_LABELS: Record<FoodCategory, string> = {
-  FRUIT: 'Meyvə',
-  VEGETABLE: 'Tərəvəz',
-  MEAT_POULTRY: 'Ət və toyuq',
-  DAIRY: 'Süd məhsulları',
-  BREAD_PASTRY: 'Çörək və pastry',
-  EGGS: 'Yumurta',
-  CONFECTIONERY: 'Şirniyyat',
-  BEVERAGES: 'İçki',
-  OTHER: 'Digər qida',
-}
-
 export interface LoginResponse {
   accessToken: string
   expiresInSeconds: number
@@ -41,6 +18,20 @@ export const FILIAL_LIST = [
   'Bravo Sumqayıt',
 ]
 
+export const ADMIN_CATEGORIES = [
+  'Meyvə və tərəvəz',
+  'Ət və dəniz məhsulları',
+  'Süd məhsulları və pendirlər',
+  'Quru qida və baxliyatlar',
+  'Qəlyanaltılar və şirniyyatlar',
+  'İçkilər',
+  'Ev və gigiyena məhsulları',
+  'Şəxsi qulluq və kosmetika',
+  'Uşaq aləmi',
+  'Ev əşyaları və tekstil',
+  'Geyim',
+]
+
 export interface UserRow {
   userId: string
   email: string
@@ -48,6 +39,7 @@ export interface UserRow {
   lastName: string
   filial: string
   role: string
+  categories?: string[]
   active: boolean
 }
 

@@ -7,9 +7,9 @@ let users = [
   {
     userId: 'SA-ADMIN',
     email: 'admin@freshguard.com',
-    firstName: 'Super',
+    firstName: 'Sübhan',
     lastName: 'Admin',
-    filial: 'ALL',
+    filial: 'Mərkəz',
     role: 'SUPER_ADMIN',
     password: 'SuperAdmin!2026',
     active: true
@@ -35,6 +35,7 @@ const server = http.createServer((req, res) => {
     req.on('end', () => {
       try {
         const { userId, password } = JSON.parse(body);
+        // Find user by email or userId
         const user = users.find(u => (u.email === userId || u.userId === userId) && u.password === password && u.active);
         
         if (user) {
@@ -47,7 +48,7 @@ const server = http.createServer((req, res) => {
           }));
         } else {
           res.writeHead(401, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'E-mail və ya şifrə yanlışdır' }));
+          res.end(JSON.stringify({ error: 'İstifadəçi adı və ya şifrə yanlışdır' }));
         }
       } catch (e) {
         res.writeHead(400);
