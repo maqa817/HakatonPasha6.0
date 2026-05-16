@@ -53,7 +53,7 @@ export function fetchUsers(token: string, activeOnly = false): Promise<UserRow[]
 
 export function createUser(
   token: string,
-  payload: { firstName: string; lastName: string; filial: string; email: string; password: string; role: string; categories?: string[] },
+  payload: { firstName: string; lastName: string; filial: string; email: string; password: string; role: string; category?: string },
 ): Promise<UserRow> {
   return apiFetch<UserRow>('/api/admin/users', {
     method: 'POST',
@@ -65,7 +65,7 @@ export function createUser(
 export function updateUser(
   token: string,
   userId: string,
-  payload: { firstName: string; lastName: string; filial: string; email: string; newPassword?: string; role: string; categories?: string[] },
+  payload: { firstName: string; lastName: string; filial: string; email: string; newPassword?: string; role: string; category?: string },
 ): Promise<UserRow> {
   return apiFetch<UserRow>(`/api/admin/users/${encodeURIComponent(userId)}`, {
     method: 'PUT',

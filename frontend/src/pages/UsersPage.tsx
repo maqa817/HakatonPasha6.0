@@ -23,7 +23,7 @@ export function UsersPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [roleSelect, setRoleSelect] = useState('MANAGER')
-  const [selectedCats, setSelectedCats] = useState<string[]>([])
+  const [selectedCategory, setSelectedCategory] = useState(ADMIN_CATEGORIES[0])
 
   const [edit, setEdit] = useState<UserRow | null>(null)
   const [editFn, setEditFn] = useState('')
@@ -32,7 +32,7 @@ export function UsersPage() {
   const [editEmail, setEditEmail] = useState('')
   const [editPw, setEditPw] = useState('')
   const [editRole, setEditRole] = useState('')
-  const [editCats, setEditCats] = useState<string[]>([])
+  const [editCategory, setEditCategory] = useState('')
 
   async function reload() {
     if (!token) {
@@ -70,14 +70,14 @@ export function UsersPage() {
         email: email.trim(),
         password,
         role: roleSelect,
-        categories: roleSelect === 'ADMIN' ? selectedCats : [],
+        category: roleSelect === 'ADMIN' ? selectedCategory : undefined,
       })
       setFn('')
       setLn('')
       setFilial(FILIAL_LIST[0])
       setEmail('')
       setPassword('')
-      setSelectedCats([])
+      setSelectedCategory(ADMIN_CATEGORIES[0])
       await reload()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Xəta')
@@ -93,7 +93,7 @@ export function UsersPage() {
     setEditFilial(u.filial)
     setEditEmail(u.email || '')
     setEditRole(u.role)
-    setEditCats(u.categories || [])
+    setEditCategory(u.category || ADMIN_CATEGORIES[0])
     setEditPw('')
   }
 
@@ -110,7 +110,7 @@ export function UsersPage() {
         filial: editFilial,
         email: editEmail.trim(),
         role: editRole,
-        categories: editRole === 'ADMIN' ? editCats : [],
+        category: editRole === 'ADMIN' ? editCategory : undefined,
         ...(editPw.length >= 8 ? { newPassword: editPw } : {}),
       })
       setEdit(null)
@@ -245,26 +245,21 @@ export function UsersPage() {
 
       {roleSelect === 'ADMIN' && (
         <div className="rounded-2xl border border-fg-300/15 bg-surface/80 p-5 shadow-card">
-          <span className="mb-3 block text-sm font-medium text-fg-700">Admin üçün sahalər seçin:</span>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {ADMIN_CATEGORIES.map((cat) => (
-              <label key={cat} className="flex items-center gap-2 text-sm text-fg-600 transition hover:text-fg-900">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-fg-300 text-mint-600 focus:ring-mint-500"
-                  checked={selectedCats.includes(cat)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedCats([...selectedCats, cat]);
-                    } else {
-                      setSelectedCats(selectedCats.filter((c) => c !== cat));
-                    }
-                  }}
-                />
-                {cat}
-              </label>
-            ))}
-          </div>
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="text-fg-600 font-medium">Admin üçün sahə seçin</span>
+            <select
+              className="rounded-lg border border-fg-300/40 bg-white px-3 py-2.5 outline-none ring-mint-400/30 focus:ring-2"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              required
+            >
+              {ADMIN_CATEGORIES.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
       )}
 
@@ -309,14 +304,10 @@ export function UsersPage() {
                         >
                           {u.role === 'SUPER_ADMIN' ? 'Super Admin' : u.role === 'ADMIN' ? 'Admin' : 'Müdir'}
                         </span>
-                        {u.role === 'ADMIN' && u.categories && u.categories.length > 0 && (
-                          <div className="flex flex-wrap gap-1">
-                            {u.categories.map((c) => (
-                              <span key={c} className="rounded bg-fg-100 px-1.5 py-0.5 text-[10px] text-fg-600">
-                                {c}
-                              </span>
-                            ))}
-                          </div>
+                        {u.role === 'ADMIN' && u.category && (
+                          <span className="text-[10px] text-fg-500 font-medium uppercase tracking-wider">
+                            {u.category}
+                          </span>
                         )}
                       </div>
                     </td>
@@ -427,28 +418,21 @@ export function UsersPage() {
               />
             </label>
             {editRole === 'ADMIN' && (
-              <div className="space-y-2">
-                <span className="text-sm font-medium text-fg-700">Admin üçün sahalər seçin:</span>
-                <div className="grid grid-cols-2 gap-3 max-h-40 overflow-y-auto rounded-lg border border-fg-300/20 p-3 bg-fg-50/50">
+              <label className="flex flex-col gap-1 text-sm">
+                <span className="text-fg-600 font-medium">Admin üçün sahə seçin</span>
+                <select
+                  className="rounded-lg border border-fg-300/40 bg-white px-3 py-2.5 outline-none ring-mint-400/30 focus:ring-2"
+                  value={editCategory}
+                  onChange={(e) => setEditCategory(e.target.value)}
+                  required
+                >
                   {ADMIN_CATEGORIES.map((cat) => (
-                    <label key={cat} className="flex items-center gap-2 text-sm text-fg-600 transition hover:text-fg-900">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-fg-300 text-mint-600 focus:ring-mint-500"
-                        checked={editCats.includes(cat)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setEditCats([...editCats, cat]);
-                          } else {
-                            setEditCats(editCats.filter((c) => c !== cat));
-                          }
-                        }}
-                      />
+                    <option key={cat} value={cat}>
                       {cat}
-                    </label>
+                    </option>
                   ))}
-                </div>
-              </div>
+                </select>
+              </label>
             )}
             <div className="flex gap-3 pt-2">
               <button

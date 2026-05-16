@@ -39,7 +39,7 @@ export interface UserRow {
   lastName: string
   filial: string
   role: string
-  categories?: string[]
+  category?: string
   active: boolean
 }
 
